@@ -10,6 +10,7 @@ import SwiftData
 
 @Model
 class Book {
+    var id: UUID
     var title: String
     var author: String
     var dateStarted: Date
@@ -21,6 +22,7 @@ class Book {
     var status: Status
     
     init(
+        id: UUID = UUID(),
         title: String,
         author: String,
         dateStarted: Date = Date.now,
@@ -30,6 +32,7 @@ class Book {
         rating: Int? = nil,
         status: Status = .onShelf
     ) {
+        self.id = id
         self.title = title
         self.author = author
         self.dateStarted = dateStarted
