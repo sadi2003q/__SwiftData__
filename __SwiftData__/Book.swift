@@ -14,7 +14,7 @@ class Book {
     var title: String
     var author: String
     var dateStarted: Date
-    var dateAround: Date
+    var dateAdded: Date
     var dateCompleted: Date
     var summary: String
     var rating: Int?
@@ -36,7 +36,7 @@ class Book {
         self.title = title
         self.author = author
         self.dateStarted = dateStarted
-        self.dateAround = dateAround
+        self.dateAdded = dateAround
         self.dateCompleted = dateCompleted
         self.summary = summary
         self.rating = rating
