@@ -29,7 +29,7 @@ class Book {
         dateAround: Date = Date.distantPast,
         dateCompleted: Date = Date.distantFuture,
         summary: String = "",
-        rating: Int? = nil,
+        rating: Int = -1,
         status: Status = .onShelf
     ) {
         self.id = id

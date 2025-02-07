@@ -2,7 +2,7 @@
 //  BookListView.swift
 //  __SwiftData__
 //
-//  Created by  Sadi on 01/02/2025.
+//  Created by  Sadi on 07/02/2025.
 //
 
 import SwiftUI
@@ -11,120 +11,108 @@ import SwiftData
 
 struct BookListView: View {
     
-    @State private var createNewBook: Bool = false
-    
-    @Environment(\.modelContext) private var context
     @Query(sort: \Book.title) private var books: [Book]
+    @Environment(\.modelContext) private var context
+    
+    @State private var showAddView = false
     
     
     var body: some View {
-        NavigationStack{
-            View_BookList
-                .navigationTitle("Book List")
-                .toolbar {
-                    ToolbarItem(placement: .topBarTrailing) {
-                        Button_AddNewBook
-                    }
+        View_content
+            .navigationTitle("Books")
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button_addNewBook
                 }
-        }
-        
-        .sheet(isPresented: $createNewBook) {
-            NewBookView()
-                .presentationDetents([.medium])
-        }
-    }
-    
-    private var View_BookList: some View {
-        HStack(spacing: 20){
-            
-            if books.isEmpty {
-                ContentUnavailableView("Enter your first Book", systemImage: "book.fill")
-            } else {
-                List {
-                    ForEach(books) { book in
-                        NavigationLink {
-                            EditView(book: book)
-                        } label: {
-                            HStack(spacing: 10) {
-                                book.icon
-                                VStack(alignment: .leading) {
-                                    Text(book.title).font(.title2)
-                                    Text(book.author).foregroundStyle(.secondary)
-                                    if let rating = book.rating {
-                                        HStack {
-                                            ForEach(1..<rating, id: \.self) { _ in
-                                                Image(systemName: "star.fill")
-                                                    .imageScale(.small)
-                                                    .foregroundStyle(.yellow)
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                        
-                    }
-                    .onDelete { indexSet in
-                        indexSet.forEach { index in
-                            let book = books[index]
-                            context.delete(book)
-                        }
-                    }
-                }
-                .listStyle(.plain)
             }
-            
-            
+            .sheet(isPresented: $showAddView) {
+                AddView()
+                    .presentationDetents([.medium])
+            }
+    }
+    
+    private var View_content: some View {
+        Group {
+            if books.isEmpty {
+                View_EmptyView
+            } else {
+                View_bookItem
+            }
         }
     }
     
-    private func onDelete(_ indexSet: IndexSet) {
-        context.delete(books[indexSet.first!])
-    }
-    
-    private var Button_AddNewBook: some View {
-        Button {
-            createNewBook.toggle()
-        } label: {
-            Image(systemName: "plus.circle.fill")
-                .imageScale(.large)
-        }
-        
-    }
-}
-
-
-
-#Preview {
-    
-    var showOnce = true
-    
-    NavigationStack {
-        BookListView()
-            .modelContainer(for: Book.self) { result in
-                if showOnce {
-                    switch result {
-                    case .success(let container):
-                        // Insert mock data into the container
-                        let context = container.mainContext
-                        let book1 = Book(title: "The Great Gatsby", author: "F. Scott Fitzgerald")
-                        let book2 = Book(title: "To Kill a Mockingbird", author: "Harper Lee")
-                        let book3 = Book(title: "1984", author: "George Orwell")
-                        
-                        context.insert(book1)
-                        context.insert(book2)
-                        context.insert(book3)
-                        
-                    case .failure(let error):
-                        print("Failed to create container: \(error.localizedDescription)")
-                    }
+    private var View_bookItem: some View {
+        List {
+            ForEach(books) { book in
+                NavigationLink {
+                    EditView(book: book)
+                } label: {
+                    BookItemView(book: book)
                 }
+
                 
             }
-            .onAppear{
-                showOnce.toggle()
+            .onDelete(perform: deleteItems)
+        }
+    }
+    
+    private var View_EmptyView: some View {
+        ContentUnavailableView("Enter your first book.", systemImage: "book.fill")
+    }
+    
+    private var Button_addNewBook: some View {
+        Button {
+            showAddView.toggle()
+        } label: {
+            Image(systemName: "plus.circle.fill")
+                .font(.title2)
+        }
+    }
+    
+    private func deleteItems(at offsets: IndexSet) {
+        offsets.forEach { index in
+            let book = books[index]
+            context.delete(book)
+        }
+    }
+    
+    
+    
+    
+}
+
+private struct BookItemView: View {
+    @Bindable var book: Book
+    @State private var rating: Int?
+    
+//    init(book: Book) {
+//        self.book = book
+//        self._rating = State(initialValue: book.rating) // Initialise rating
+//    }
+    
+    var body: some View {
+        HStack {
+            book.icon
+            
+            VStack(alignment: .leading) {
+                Text(book.title)
+                    .font(.headline)
+                Text(book.author)
+                    .foregroundStyle(.secondary)
+                
+                if book.rating != -1 {
+                    RatingsView(maxRating: 5, currentRating: $book.rating)
+                }
             }
+        }
+        .padding()
     }
 }
- 
- 
+
+#Preview {
+    NavigationStack {
+        BookListView()
+    }
+    .modelContainer(for: Book.self)
+    
+}
