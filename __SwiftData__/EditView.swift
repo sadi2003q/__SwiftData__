@@ -16,14 +16,14 @@ struct EditView: View {
     @Environment(\.modelContext) private var context
     @Bindable var book: Book
     
-//    @State private var title: String = ""
-//    @State private var author: String = ""
-//    @State private var dateStarted: Date = Date.distantPast
-//    @State private var dateAdded: Date = Date.now
-//    @State private var status: Status = .inProgress
-//    @State private var dateCompleted: Date = Date.distantFuture
-//    @State private var summary: String = ""
-//    @State private var rating: Int?
+    @State private var title: String = ""
+    @State private var author: String = ""
+    @State private var dateStarted: Date = Date.distantPast
+    @State private var dateAdded: Date = Date.now
+    @State private var status: Status = .inProgress
+    @State private var dateCompleted: Date = Date.distantFuture
+    @State private var summary: String = ""
+    @State private var rating: Int?
     
     
     
@@ -47,15 +47,21 @@ struct EditView: View {
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
-                Button_Update
+                if change {
+                    Button_Update
+                }
+                
             }
+        }
+        .onAppear {
+            onAppear_Value()
         }
     }
     
     private var View_Status: some View {
         HStack {
             Text("Status")
-            Picker("Status", selection: $book.status) {
+            Picker("Status", selection: $status) {
                 ForEach(Status.allCases) { status in
                     Text(status.description).tag(status)
                 }
@@ -67,10 +73,10 @@ struct EditView: View {
     private var View_BookDate: some View {
         VStack {
             View_DateAdded
-            if book.status == .completed || book.status == .inProgress {
+            if status == .completed || status == .inProgress {
                 View_DateStarted
             }
-            if book.status == .completed {
+            if status == .completed {
                 View_DateCompleted
             }
             
@@ -78,21 +84,21 @@ struct EditView: View {
         .onChange(of: book.status) { oldValue, newValue in
             
             if newValue == .onShelf {
-                book.dateStarted = Date.distantPast
-                book.dateCompleted = Date.distantPast
+                dateStarted = Date.distantPast
+                dateCompleted = Date.distantPast
             } else if newValue == .inProgress && oldValue == .completed {
                 // from completed to inProgress
-                book.dateCompleted = Date.distantPast
+                dateCompleted = Date.distantPast
             } else if newValue == .inProgress && oldValue == .onShelf {
                 // Book has been started
-                book.dateStarted = Date.now
+                dateStarted = Date.now
             } else if newValue == .completed && oldValue == .onShelf {
                 // Forgot to start book
-                book.dateCompleted = Date.now
-                book.dateStarted = book.dateAdded
+                dateCompleted = Date.now
+                dateStarted = dateAdded
             } else {
                 // completed
-                book.dateCompleted = Date.now
+                dateCompleted = Date.now
             }
             
         }
@@ -101,7 +107,7 @@ struct EditView: View {
     
     private var View_DateAdded: some View {
         LabeledContent {
-            DatePicker("", selection: $book.dateAdded, in: book.dateAdded..., displayedComponents: .date)
+            DatePicker("", selection: $dateAdded, in: dateAdded..., displayedComponents: .date)
         } label: {
             Text("Date Added")
         }
@@ -109,7 +115,7 @@ struct EditView: View {
     
     private var View_DateStarted: some View {
         LabeledContent {
-            DatePicker("", selection: $book.dateStarted, in: book.dateAdded..., displayedComponents: .date)
+            DatePicker("", selection: $dateStarted, in: dateAdded..., displayedComponents: .date)
         } label: {
             Text("Date Started")
         }
@@ -117,7 +123,7 @@ struct EditView: View {
     
     private var View_DateCompleted: some View {
         LabeledContent {
-            DatePicker("", selection: $book.dateCompleted, in: book.dateAdded..., displayedComponents: .date)
+            DatePicker("", selection: $dateCompleted, in: dateAdded..., displayedComponents: .date)
         } label: {
             Text("Date Completed")
         }
@@ -125,7 +131,7 @@ struct EditView: View {
     
     private var View_Rating: some View {
         LabeledContent {
-            RatingsView(maxRating: 5, currentRating: $book.rating, width: 30)
+            RatingsView(maxRating: 5, currentRating: $rating, width: 30)
         } label: {
             Text("Rating")
         }
@@ -133,7 +139,7 @@ struct EditView: View {
     
     private var View_Title: some View {
         LabeledContent {
-            TextField("", text: $book.title).bold()
+            TextField("", text: $title).bold()
         } label: {
             Text("Title").foregroundStyle(.secondary)
         }
@@ -141,7 +147,7 @@ struct EditView: View {
     
     private var View_Author: some View {
         LabeledContent {
-            TextField("", text: $book.author).bold()
+            TextField("", text: $author).bold()
         } label: {
             Text("Author").foregroundStyle(.secondary)
         }
@@ -150,7 +156,7 @@ struct EditView: View {
     private var View_Summary: some View {
         VStack(alignment: .leading) {
             Text("Summary").underline()
-            TextEditor(text: $book.summary)
+            TextEditor(text: $summary)
                 .padding(5)
                 .overlay(RoundedRectangle(cornerRadius: 20).stroke(Color(uiColor: .tertiarySystemFill), lineWidth: 2))
         }
@@ -159,11 +165,49 @@ struct EditView: View {
     
     private var Button_Update: some View {
         Button("Update") {
-            dismiss()
+            
+            onChange_Value()
             try? context.save()
+            
+            dismiss()
         }
         .buttonStyle(.borderedProminent)
         
+    }
+    
+    var change: Bool {
+        status != book.status
+                || rating != book.rating
+                || title != book.title
+                || author != book.author
+                || summary != book.summary
+                || dateAdded != book.dateAdded
+                || dateStarted != book.dateStarted
+                || dateCompleted != book.dateCompleted
+    }
+    
+    
+    
+    private func onAppear_Value() {
+        title = book.title
+        author = book.author
+        dateAdded = book.dateAdded
+        dateStarted = book.dateAdded
+        dateCompleted = book.dateCompleted
+        summary = book.summary
+        rating = book.rating == -1 ? 0 : book.rating
+    }
+    
+    private func onChange_Value() {
+        book.title = title
+        book.author = author
+        dateAdded = book.dateAdded
+        dateStarted = book.dateStarted
+        
+        book.dateCompleted = dateCompleted
+        
+        book.summary = summary
+        book.rating = rating
     }
     
     
