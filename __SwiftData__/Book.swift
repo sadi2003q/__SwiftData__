@@ -26,7 +26,7 @@ class Book {
         title: String,
         author: String,
         dateStarted: Date = Date.now,
-        dateAround: Date = Date.distantPast,
+        dateAdded: Date = Date.distantPast,
         dateCompleted: Date = Date.distantFuture,
         summary: String = "",
         rating: Int = -1,
@@ -36,7 +36,7 @@ class Book {
         self.title = title
         self.author = author
         self.dateStarted = dateStarted
-        self.dateAdded = dateAround
+        self.dateAdded = dateAdded
         self.dateCompleted = dateCompleted
         self.summary = summary
         self.rating = rating

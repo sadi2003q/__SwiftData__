@@ -212,9 +212,13 @@ struct EditView: View {
     
     
 }
-//
-//#Preview {
-//    NavigationStack {
-//        EditView()
-//    }
-//}
+
+
+#Preview {
+    let preview = Preview()
+    return NavigationStack {
+        EditView(book: Book.sampleBooks[5])
+    }
+    
+    
+}

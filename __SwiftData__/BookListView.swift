@@ -85,11 +85,6 @@ private struct BookItemView: View {
     @Bindable var book: Book
     @State private var rating: Int?
     
-//    init(book: Book) {
-//        self.book = book
-//        self._rating = State(initialValue: book.rating) // Initialise rating
-//    }
-    
     var body: some View {
         HStack {
             book.icon
@@ -109,10 +104,13 @@ private struct BookItemView: View {
     }
 }
 
+
+
 #Preview {
-    NavigationStack {
+    let preview = Preview(Book.self)
+    preview.addExamples(Book.sampleBooks)
+    return NavigationStack{
         BookListView()
+            .modelContainer(preview.container)
     }
-    .modelContainer(for: Book.self)
-    
 }
