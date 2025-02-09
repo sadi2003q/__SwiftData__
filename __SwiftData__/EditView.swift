@@ -81,7 +81,7 @@ struct EditView: View {
             }
             
         }
-        .onChange(of: book.status) { oldValue, newValue in
+        .onChange(of: status) { oldValue, newValue in
             
             if newValue == .onShelf {
                 dateStarted = Date.distantPast
@@ -176,7 +176,7 @@ struct EditView: View {
     }
     
     var change: Bool {
-        status != book.status
+        status != Status(rawValue: book.status)
                 || rating != book.rating
                 || title != book.title
                 || author != book.author
@@ -189,6 +189,7 @@ struct EditView: View {
     
     
     private func onAppear_Value() {
+        status = Status(rawValue: book.status) ?? .inProgress
         title = book.title
         author = book.author
         dateAdded = book.dateAdded
@@ -203,7 +204,7 @@ struct EditView: View {
         book.author = author
         dateAdded = book.dateAdded
         dateStarted = book.dateStarted
-        
+        book.status = status.rawValue
         book.dateCompleted = dateCompleted
         
         book.summary = summary
@@ -215,7 +216,7 @@ struct EditView: View {
 
 
 #Preview {
-    let preview = Preview()
+    //let _ = Preview(Book.self)
     return NavigationStack {
         EditView(book: Book.sampleBooks[5])
     }

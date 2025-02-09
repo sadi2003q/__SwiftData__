@@ -8,17 +8,39 @@
 import SwiftUI
 import SwiftData
 
+enum SortOder: String, Identifiable, CaseIterable {
+    case title
+    case author
+    case status
+    
+    var id: Self {
+        self
+    }
+    
+}
+
+
 
 struct BookListView: View {
-    
-    @Query(sort: \Book.title) private var books: [Book]
-    @Environment(\.modelContext) private var context
+
     
     @State private var showAddView = false
+    @State private var sortOrder: SortOder = .author
+    
+    
+    
+    
+    
     
     
     var body: some View {
-        View_content
+        
+        VStack {
+            Section_Filter
+            BookList(sortOrder: sortOrder)
+        }
+        
+        
             .navigationTitle("Books")
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
@@ -31,28 +53,27 @@ struct BookListView: View {
             }
     }
     
-    private var View_content: some View {
-        Group {
-            if books.isEmpty {
-                View_EmptyView
-            } else {
-                View_bookItem
-            }
+    
+    
+    private var Section_Filter: some View {
+        HStack {
+            Text("Filter")
+            
+            Spacer()
+            Button_Filter
         }
+        .padding()
     }
     
-    private var View_bookItem: some View {
-        List {
-            ForEach(books) { book in
-                NavigationLink {
-                    EditView(book: book)
-                } label: {
-                    BookItemView(book: book)
-                }
+    private var Button_Filter: some View {
+        HStack {
 
-                
+            Picker("Sort Order", selection: $sortOrder) {
+                ForEach(SortOder.allCases) { order in
+                    Text("Sorted by : \(order.rawValue)").tag(order)
+                }
             }
-            .onDelete(perform: deleteItems)
+            .buttonStyle(.bordered)
         }
     }
     
@@ -69,19 +90,14 @@ struct BookListView: View {
         }
     }
     
-    private func deleteItems(at offsets: IndexSet) {
-        offsets.forEach { index in
-            let book = books[index]
-            context.delete(book)
-        }
-    }
+    
     
     
     
     
 }
 
-private struct BookItemView: View {
+struct BookItemView: View {
     @Bindable var book: Book
     @State private var rating: Int?
     
@@ -111,6 +127,7 @@ private struct BookItemView: View {
     preview.addExamples(Book.sampleBooks)
     return NavigationStack{
         BookListView()
-            .modelContainer(preview.container)
+            
     }
+    .modelContainer(preview.container)
 }
