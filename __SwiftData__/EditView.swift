@@ -39,8 +39,7 @@ struct EditView: View {
             
             Divider()
             View_Summary
-            
-            
+            Button_Quote
         }
         .padding()
         .navigationTitle("Information")
@@ -50,7 +49,6 @@ struct EditView: View {
                 if change {
                     Button_Update
                 }
-                
             }
         }
         .onAppear {
@@ -175,15 +173,29 @@ struct EditView: View {
         
     }
     
+    private var Button_Quote: some View {
+        NavigationLink {
+            QuoteListView(book: book)
+        } label: {
+            let count = book.quotes?.count ?? 0
+            Label("^[\(count) Quotes](inflect: true)", systemImage: "quote.opening")
+        }
+        .buttonStyle(.bordered)
+        .frame(maxWidth: .infinity, alignment: .trailing)
+        .padding(.horizontal)
+        
+    }
+    
+    
     var change: Bool {
         status != Status(rawValue: book.status)
-                || rating != book.rating
-                || title != book.title
-                || author != book.author
-                || summary != book.summary
-                || dateAdded != book.dateAdded
-                || dateStarted != book.dateStarted
-                || dateCompleted != book.dateCompleted
+        || rating != book.rating
+        || title != book.title
+        || author != book.author
+        || summary != book.synopsis
+        || dateAdded != book.dateAdded
+        || dateStarted != book.dateStarted
+        || dateCompleted != book.dateCompleted
     }
     
     
@@ -195,7 +207,7 @@ struct EditView: View {
         dateAdded = book.dateAdded
         dateStarted = book.dateAdded
         dateCompleted = book.dateCompleted
-        summary = book.summary
+        summary = book.synopsis
         rating = book.rating == -1 ? 0 : book.rating
     }
     
@@ -207,7 +219,7 @@ struct EditView: View {
         book.status = status.rawValue
         book.dateCompleted = dateCompleted
         
-        book.summary = summary
+        book.synopsis = summary
         book.rating = rating
     }
     

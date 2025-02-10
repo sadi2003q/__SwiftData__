@@ -16,8 +16,11 @@ class Book {
     var dateStarted: Date
     var dateAdded: Date
     var dateCompleted: Date
-    var summary: String
+    @Attribute(originalName: "summary") /// Rename one attribute
+    var synopsis: String
     var rating: Int?
+    
+    var quotes: [Quote]?
     
     var status: Status.RawValue
     
@@ -28,7 +31,7 @@ class Book {
         dateStarted: Date = Date.now,
         dateAdded: Date = Date.distantPast,
         dateCompleted: Date = Date.distantFuture,
-        summary: String = "",
+        synopsis: String = "",
         rating: Int = -1,
         status: Status = .onShelf
     ) {
@@ -38,7 +41,7 @@ class Book {
         self.dateStarted = dateStarted
         self.dateAdded = dateAdded
         self.dateCompleted = dateCompleted
-        self.summary = summary
+        self.synopsis = synopsis
         self.rating = rating
         self.status = status.rawValue
     }

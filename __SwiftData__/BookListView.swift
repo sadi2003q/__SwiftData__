@@ -18,20 +18,11 @@ enum SortOder: String, Identifiable, CaseIterable {
     }
     
 }
-
-
-
 struct BookListView: View {
-
+    
     
     @State private var showAddView = false
     @State private var sortOrder: SortOder = .author
-    
-    
-    
-    
-    
-    
     
     var body: some View {
         
@@ -41,16 +32,16 @@ struct BookListView: View {
         }
         
         
-            .navigationTitle("Books")
-            .toolbar {
-                ToolbarItem(placement: .topBarTrailing) {
-                    Button_addNewBook
-                }
+        .navigationTitle("Books")
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                Button_addNewBook
             }
-            .sheet(isPresented: $showAddView) {
-                AddView()
-                    .presentationDetents([.medium])
-            }
+        }
+        .sheet(isPresented: $showAddView) {
+            AddView()
+                .presentationDetents([.medium])
+        }
     }
     
     
@@ -58,7 +49,6 @@ struct BookListView: View {
     private var Section_Filter: some View {
         HStack {
             Text("Filter")
-            
             Spacer()
             Button_Filter
         }
@@ -67,7 +57,6 @@ struct BookListView: View {
     
     private var Button_Filter: some View {
         HStack {
-
             Picker("Sort Order", selection: $sortOrder) {
                 ForEach(SortOder.allCases) { order in
                     Text("Sorted by : \(order.rawValue)").tag(order)
@@ -88,13 +77,7 @@ struct BookListView: View {
             Image(systemName: "plus.circle.fill")
                 .font(.title2)
         }
-    }
-    
-    
-    
-    
-    
-    
+    } 
 }
 
 struct BookItemView: View {
@@ -127,7 +110,7 @@ struct BookItemView: View {
     preview.addExamples(Book.sampleBooks)
     return NavigationStack{
         BookListView()
-            
+        
     }
     .modelContainer(preview.container)
 }
