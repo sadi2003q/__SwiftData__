@@ -20,6 +20,7 @@ class Book {
     var synopsis: String
     var rating: Int?
     
+    @Relationship(deleteRule: .cascade) /// this will help to delete the data when there is one to many relation
     var quotes: [Quote]?
     
     var status: Status.RawValue

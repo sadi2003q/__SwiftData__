@@ -16,5 +16,15 @@ struct ContentView: View {
 }
 
 #Preview {
-    ContentView()
+    
+    let preview = Preview(Book.self)
+    preview.addExamples(Book.sampleBooks)
+    
+    return NavigationStack {
+        ContentView()
+           
+    }
+    .modelContainer(preview.container)
+    
+    
 }

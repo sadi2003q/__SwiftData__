@@ -52,7 +52,7 @@ struct QuoteListView: View {
             TextField("#Page", text: $page)
                 .autocorrectionDisabled(true)
                 .textFieldStyle(.roundedBorder)
-                .frame(width: 150)
+                .frame(width: 80)
         }
     }
     
@@ -92,7 +92,6 @@ struct QuoteListView: View {
         page = ""
         selectedQuote = nil
     }
-    
     
     private var List_AllQuotes: some View {
         List {
