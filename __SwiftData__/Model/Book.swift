@@ -23,6 +23,9 @@ class Book {
     @Relationship(deleteRule: .cascade) /// this will help to delete the data when there is one to many relation
     var quotes: [Quote]?
     
+    @Relationship(inverse: \Genre.books)
+    var genres: [Genre]?
+    
     var status: Status.RawValue
     
     init(

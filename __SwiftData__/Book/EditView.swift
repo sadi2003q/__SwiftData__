@@ -24,7 +24,7 @@ struct EditView: View {
     @State private var dateCompleted: Date = Date.distantFuture
     @State private var summary: String = ""
     @State private var rating: Int?
-    
+    @State private var showGenres: Bool = false
     
     
     var body: some View {
@@ -39,7 +39,7 @@ struct EditView: View {
             
             Divider()
             View_Summary
-            Button_Quote
+            Button_Accessories
         }
         .padding()
         .navigationTitle("Information")
@@ -173,6 +173,15 @@ struct EditView: View {
         
     }
     
+    private var Button_Accessories: some View {
+        HStack {
+            Button_Quote
+            Button_Genre
+        }
+        .frame(maxWidth: .infinity, alignment: .trailing)
+        .padding(.horizontal)
+    }
+    
     private var Button_Quote: some View {
         NavigationLink {
             QuoteListView(book: book)
@@ -181,9 +190,18 @@ struct EditView: View {
             Label("^[\(count) Quotes](inflect: true)", systemImage: "quote.opening")
         }
         .buttonStyle(.bordered)
-        .frame(maxWidth: .infinity, alignment: .trailing)
-        .padding(.horizontal)
         
+        
+    }
+    
+    private var Button_Genre: some View {
+        Button("Genre", systemImage: "bookmark.fill") {
+            showGenres.toggle()
+        }
+        .buttonStyle(.bordered)
+        .sheet(isPresented: $showGenres) {
+            GenresView(book: book)
+        }
     }
     
     
@@ -232,6 +250,5 @@ struct EditView: View {
     return NavigationStack {
         EditView(book: Book.sampleBooks[5])
     }
-    
     
 }
