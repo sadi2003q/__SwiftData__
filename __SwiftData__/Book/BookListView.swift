@@ -97,9 +97,25 @@ struct BookItemView: View {
                 if book.rating != -1 {
                     RatingsView(maxRating: 5, currentRating: $book.rating)
                 }
+                View_Genre
             }
         }
         .padding()
+    }
+    
+    private var View_Genre: some View {
+        Group {
+            if let genre = book.genres {
+                ViewThatFits {
+                    GenreStackView(genres: genre)
+                    ScrollView(.horizontal) {
+                        GenreStackView(genres: genre)
+                    }
+                }
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        
     }
 }
 

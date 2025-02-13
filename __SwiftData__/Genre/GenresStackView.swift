@@ -22,7 +22,7 @@ struct GenreStackView: View {
             ForEach(genres.sorted(using: KeyPathComparator(\Genre.name))) { genre in
                 Text(genre.name)
                     .font(.caption)
-                    .foregroundStyle(.white)
+                    .foregroundStyle(.black)
                     .padding(5)
                     .background(RoundedRectangle(cornerRadius: 6).fill(genre.hexColor))
             }

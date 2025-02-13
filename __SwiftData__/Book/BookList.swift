@@ -74,10 +74,27 @@ struct BookList: View {
 }
 
 #Preview {
+//    let preview = Preview(Book.self)
+//    preview.addExamples(Book.sampleBooks)
+//    preview.addExamples(Genre.sampleGenres)
+//    return NavigationStack {
+//        BookList(sortOrder: .title)
+//            .modelContainer(preview.container)
+//    }
+    
+    
     let preview = Preview(Book.self)
-    preview.addExamples(Book.sampleBooks)
+    let books = Book.sampleBooks
+    let genres = Genre.sampleGenres
+    
+    preview.addExamples(books)
+    preview.addExamples(genres)
+    
+   
+    
     return NavigationStack {
-        BookList(sortOrder: .title)
+         BookList(sortOrder: .title)
+            .modelContainer(preview.container)
     }
-    .modelContainer(preview.container)
+    
 }

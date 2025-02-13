@@ -22,17 +22,19 @@ struct GenresView: View {
     
     
     var body: some View {
-        Group {
-            if genres.isEmpty {
-                View_ContentNotAvailable
-            } else {
-                List_Genre
+        NavigationStack {
+            Group {
+                if genres.isEmpty {
+                    View_ContentNotAvailable
+                } else {
+                    List_Genre
+                }
+                
             }
-            
-        }
-        .navigationTitle(book.title)
-        .sheet(isPresented: $newGenre) {
-            NewGenreView()
+            .navigationTitle(book.title)
+            .sheet(isPresented: $newGenre) {
+                NewGenreView()
+            }
         }
     }
     

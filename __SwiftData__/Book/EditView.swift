@@ -39,6 +39,7 @@ struct EditView: View {
             
             Divider()
             View_Summary
+            View_Genre
             Button_Accessories
         }
         .padding()
@@ -173,6 +174,21 @@ struct EditView: View {
         
     }
     
+    private var View_Genre: some View {
+        Group {
+            if let genre = book.genres {
+                ViewThatFits {
+                    GenreStackView(genres: genre)
+                    ScrollView(.horizontal) {
+                        GenreStackView(genres: genre)
+                    }
+                }
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        
+    }
+    
     private var Button_Accessories: some View {
         HStack {
             Button_Quote
@@ -246,9 +262,33 @@ struct EditView: View {
 
 
 #Preview {
+    /*
     //let _ = Preview(Book.self)
+    let book = Book.sampleBooks[5]
     return NavigationStack {
-        EditView(book: Book.sampleBooks[5])
+        EditView(book: book)
+    }
+    */
+    
+    let preview = Preview(Book.self)
+    let books = Book.sampleBooks
+    let genres = Genre.sampleGenres
+    
+    preview.addExamples(books)
+    preview.addExamples(genres)
+    
+    // Ensure book.genres is initialized
+    if books[1].genres == nil {
+        books[1].genres = []
     }
     
+    // Add a genre to the book
+    books[1].genres?.append(genres[0])
+    
+    return NavigationStack {
+        EditView(book: books[1])
+            .modelContainer(preview.container)
+    }
 }
+
+
