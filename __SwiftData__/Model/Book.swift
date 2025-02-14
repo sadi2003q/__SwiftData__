@@ -28,6 +28,9 @@ class Book {
     
     var status: Status.RawValue
     
+    @Attribute(.externalStorage)
+    var bookCover: Data?
+    
     init(
         id: UUID = UUID(),
         title: String,

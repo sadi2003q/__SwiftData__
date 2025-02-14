@@ -69,11 +69,11 @@ struct QuoteListView: View {
             if isEditing {
                 selectedQuote?.text = text
                 selectedQuote?.page = page.isEmpty ? nil : page
-//                _makeEmpty()
+                //                _makeEmpty()
             } else {
                 let quote = page.isEmpty ? Quote(text: text) : Quote(text: text, page: page)
                 book.quotes?.append(quote)
-//                _makeEmpty()
+                //                _makeEmpty()
             }
             _makeEmpty()
         }
@@ -100,7 +100,18 @@ struct QuoteListView: View {
             ForEach(sortQuotes) { quote in
                 View_QuoteList(for: quote)
             }
-            .onDelete(perform: deleteItems)
+            .onDelete { indexSet in
+                withAnimation {
+                    indexSet.forEach { index in
+                        let quote = sortQuotes[index]
+                        book.quotes?.forEach({ bookQuote in
+                            if quote.id == bookQuote.id {
+                                modelContext.delete(quote)
+                            }
+                        })
+                    }
+                }
+            }
         }
         .listStyle(.plain)
         .navigationTitle("Quotes")
@@ -134,7 +145,7 @@ struct QuoteListView: View {
             page = quote.page ?? ""
         }
     }
-
+    
 }
 
 #Preview {

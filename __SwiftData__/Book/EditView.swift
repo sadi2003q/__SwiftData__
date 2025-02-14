@@ -7,7 +7,7 @@
 
 import SwiftUI
 import SwiftData
-
+import PhotosUI
 
 struct EditView: View {
     
@@ -20,12 +20,17 @@ struct EditView: View {
     @State private var author: String = ""
     @State private var dateStarted: Date = Date.distantPast
     @State private var dateAdded: Date = Date.now
-    @State private var status: Status = .inProgress
+    @State private var status: Status = .onShelf
     @State private var dateCompleted: Date = Date.distantFuture
     @State private var summary: String = ""
     @State private var rating: Int?
     @State private var showGenres: Bool = false
     
+    
+    @State private var selectedBookCover : PhotosPickerItem?
+    @State private var selectedBookCoverData: Data?
+    
+   
     
     var body: some View {
         VStack {
@@ -34,8 +39,14 @@ struct EditView: View {
             View_Rating
             
             Divider()
-            View_Title
-            View_Author
+            HStack {
+                PhotosPicker_BookCover
+                VStack {
+                    View_Title
+                    View_Author
+                }
+            }
+            
             
             Divider()
             View_Summary
@@ -54,6 +65,11 @@ struct EditView: View {
         }
         .onAppear {
             onAppear_Value()
+        }
+        .task(id: selectedBookCover) {
+            if let data = try? await selectedBookCover?.loadTransferable(type: Data.self) {
+                selectedBookCoverData = data
+            }
         }
     }
     
@@ -104,9 +120,53 @@ struct EditView: View {
         
     }
     
+    private var PhotosPicker_BookCover: some View {
+        PhotosPicker(
+            selection: $selectedBookCover,
+            matching: .images,
+            photoLibrary: .shared()
+        ) {
+            
+            Group {
+                if let selectedBookCoverData,
+                   let uiImage = UIImage(data: selectedBookCoverData) {
+                    Image(uiImage: uiImage)
+                        .resizable()
+                        .scaledToFit()
+                } else {
+                    Image(systemName: "photo")
+                        .resizable()
+                        .scaledToFit()
+                        .tint(.primary)
+                }
+            }
+            .frame(width: 79, height: 100)
+            .overlay(alignment: .bottomTrailing) {
+                if selectedBookCoverData != nil {
+                    Button {
+                        selectedBookCover = nil
+                        selectedBookCoverData = nil
+                    } label: {
+                        Image(systemName: "xmark.circle.fill")
+                            .foregroundStyle(.red)
+                    }
+                }
+            }
+                
+            
+        }
+    }
+    
+    
+    
     private var View_DateAdded: some View {
         LabeledContent {
-            DatePicker("", selection: $dateAdded, in: dateAdded..., displayedComponents: .date)
+            switch status {
+                case .onShelf:
+                    DatePicker("", selection: $dateAdded, displayedComponents: .date)
+                case .inProgress, .completed:
+                    DatePicker("", selection: $dateAdded, in: ...dateStarted, displayedComponents: .date)
+            }
         } label: {
             Text("Date Added")
         }
@@ -230,12 +290,13 @@ struct EditView: View {
         || dateAdded != book.dateAdded
         || dateStarted != book.dateStarted
         || dateCompleted != book.dateCompleted
+        || selectedBookCoverData != book.bookCover
     }
     
     
     
     private func onAppear_Value() {
-        status = Status(rawValue: book.status) ?? .inProgress
+//        status = Status(rawValue: book.status) ?? .inProgress
         title = book.title
         author = book.author
         dateAdded = book.dateAdded
@@ -243,6 +304,7 @@ struct EditView: View {
         dateCompleted = book.dateCompleted
         summary = book.synopsis
         rating = book.rating == -1 ? 0 : book.rating
+        selectedBookCoverData = book.bookCover
     }
     
     private func onChange_Value() {
@@ -255,6 +317,8 @@ struct EditView: View {
         
         book.synopsis = summary
         book.rating = rating
+        book.bookCover = selectedBookCoverData
+        
     }
     
     
