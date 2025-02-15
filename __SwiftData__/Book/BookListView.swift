@@ -87,6 +87,7 @@ struct BookItemView: View {
     var body: some View {
         HStack {
             book.icon
+                .font(.largeTitle)
             
             VStack(alignment: .leading) {
                 Text(book.title)
@@ -95,7 +96,7 @@ struct BookItemView: View {
                     .foregroundStyle(.secondary)
                 
                 if book.rating != -1 {
-                    RatingsView(maxRating: 5, currentRating: $book.rating)
+                    RatingsView(maxRating: 5, currentRating: $book.rating).staticRatingsView
                 }
                 View_Genre
             }

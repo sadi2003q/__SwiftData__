@@ -72,6 +72,20 @@ public struct RatingsView: View {
             return false
         }
     }
+    
+    var staticRatingsView: some View {
+        HStack {
+            ForEach(1...maxRating, id: \.self) { rating in
+                Image(systemName: sfSymbol)
+                    .resizable()
+                    .scaledToFit()
+                    .fillImage(correctImage(for: rating))
+                    .foregroundStyle(Color(color))
+            }
+        }
+        .frame(width: CGFloat(maxRating * width))
+    }
+
 }
 
 struct FillImage: ViewModifier {
