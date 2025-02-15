@@ -231,6 +231,8 @@ struct EditView: View {
             dismiss()
         }
         .buttonStyle(.borderedProminent)
+        .disabled(change)
+        .foregroundStyle(.primary)
         
     }
     
